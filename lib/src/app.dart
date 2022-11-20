@@ -19,7 +19,7 @@ class AppState extends State<App> {
   var mycontroller = TextEditingController();
   WeatherModel? weatherModel;
   Position? position;
-  var temp;
+  var temp, desc, city, country;
   String deg = '°C';
   String far = '°F';
   String mestemp = "",
@@ -82,7 +82,7 @@ class AppState extends State<App> {
                   padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
                   child: Center(
                     child: Text(
-                      "Humidity              ${weatherModel?.main?.humidity}%",
+                      "Humidity              ${weatherModel?.current?.humidity}%",
                       style: TextStyle(
                           height: 1,
                           fontSize: 20,
@@ -111,22 +111,22 @@ class AppState extends State<App> {
                 ),
               ),
               // _________________________________________________________________ Sunset & Sunrise
-              Padding(
-                  padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
-                  child: Center(
-                      child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "Sunrise: ${formatted(weatherModel?.sys?.sunrise ?? 0)}            Sunset: ${formatted(weatherModel?.sys?.sunset ?? 0)}",
-                        style: TextStyle(
-                            height: 1,
-                            fontSize: 20,
-                            fontWeight: FontWeight.w400,
-                            color: Colors.black54),
-                      ),
-                    ],
-                  ))),
+              // Padding(
+              //     padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+              //     child: Center(
+              //         child: Row(
+              //       mainAxisAlignment: MainAxisAlignment.center,
+              //       children: [
+              //         Text(
+              //           "Sunrise: ${formatted(weatherModel?.sys?.sunrise ?? 0)}            Sunset: ${formatted(weatherModel?.sys?.sunset ?? 0)}",
+              //           style: TextStyle(
+              //               height: 1,
+              //               fontSize: 20,
+              //               fontWeight: FontWeight.w400,
+              //               color: Colors.black54),
+              //         ),
+              //       ],
+              //     ))),
             ],
           ),
         ),
@@ -150,12 +150,16 @@ class AppState extends State<App> {
             weatherModel = await getWeatherbyloc(
                 position?.latitude.toString(), position?.longitude.toString());
 
-            temp = weatherModel?.main?.temp;
+            temp = weatherModel?.current?.tempC;
+            desc = weatherModel?.current?.condition;
+            city = weatherModel?.location?.name;
+            country = weatherModel?.location?.country;
+
             if (weatherModel != null) {
-              mestemp = (weatherModel?.main?.temp).toString() + deg;
-              mesdescription = (weatherModel?.weather?[0].main).toString();
-              mescity = (weatherModel?.name).toString();
-              mescountry = (weatherModel?.sys?.country).toString();
+              mestemp = temp.toString() + deg;
+              mesdescription = desc.toString();
+              mescity = city.toString();
+              mescountry = country.toString();
             } else {
               mestemp = 'Invalid city';
               mesdescription = 'Invalid city';
@@ -245,10 +249,10 @@ class AppState extends State<App> {
           onPressed: () async {
             weatherModel = await getWeather(mycontroller.text);
             if (weatherModel != null) {
-              mestemp = (weatherModel?.main?.temp).toString() + deg;
-              mesdescription = (weatherModel?.weather?[0].main).toString();
-              mescity = (weatherModel?.name).toString();
-              mescountry = (weatherModel?.sys?.country).toString();
+              mestemp = temp.toString() + deg;
+              mesdescription = desc.toString();
+              mescity = city.toString();
+              mescountry = country.toString();
             } else {
               mestemp = 'Invalid city';
               mesdescription = 'Invalid city';
@@ -271,7 +275,7 @@ class AppState extends State<App> {
 
   getWeather(String city) async {
     final url =
-        'https://api.openweathermap.org/data/2.5/weather?q=$city&appid=eb6d75a05b00484ed9aba7e98becc56a&units=metric';
+        'http://api.weatherapi.com/v1/current.json?key=1893906a851c461482471305222011&q=$city&aqi=no';
     try {
       var res = await get(Uri.parse(url));
       //print(res.body);
@@ -287,7 +291,7 @@ class AppState extends State<App> {
   //call by location
   getWeatherbyloc(String? lat, String? lon) async {
     var url =
-        "https://api.openweathermap.org/data/2.5/weather?lat=$lat&lon=$lon&appid=eb6d75a05b00484ed9aba7e98becc56a&units=metric";
+        "http://api.weatherapi.com/v1/current.json?key=1893906a851c461482471305222011&q=$lat,$lon&aqi=no";
     try {
       final response = await get(Uri.parse(url));
       if (response.statusCode == 200) {
