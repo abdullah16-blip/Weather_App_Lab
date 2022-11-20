@@ -2,24 +2,59 @@ import 'package:flutter/material.dart';
 import 'package:weatherapp/src/app.dart';
 import 'src/app.dart';
 import 'src/splashscreen.dart';
+import 'dart:async';
 
 void main() {
   runApp(App());
 }
 
-class MyApp extends StatefulWidget {
-  const MyApp({Key? key}) : super(key: key);
-
-  @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: 'Splash Screen',
+      theme: ThemeData(
+        primarySwatch: Colors.green,
+      ),
+      home: MyHomePage(),
       debugShowCheckedModeBanner: false,
-      home: splashscreen(),
+    );
+  }
+}
+
+class MyHomePage extends StatefulWidget {
+  @override
+  _MyHomePageState createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  @override
+  void initState() {
+    super.initState();
+    Timer(
+        Duration(seconds: 3),
+        () => Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (context) => SecondScreen())));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        color: Colors.white,
+        child: FlutterLogo(size: MediaQuery.of(context).size.height));
+  }
+}
+
+class SecondScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("GeeksForGeeks")),
+      body: Center(
+          child: Text(
+        "Home page",
+        textScaleFactor: 2,
+      )),
     );
   }
 }
